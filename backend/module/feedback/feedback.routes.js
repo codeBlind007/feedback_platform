@@ -7,7 +7,7 @@ router
   .post("/", authMiddleware, feedbackController.createFeedback)
   .get("/", authMiddleware, feedbackController.getUserFeedback);
 
-router.post("/:feedbackId/respond", authMiddleware, feedbackController.respondToFeedback);
+router.patch("/:feedbackId/respond", authMiddleware, feedbackController.respondToFeedback);
 router.get("/analytics", authMiddleware, feedbackController.getAnalytics);
 
 router.get("/all-feedbacks", authMiddleware, feedbackController.getFeedbacksByAdmin);

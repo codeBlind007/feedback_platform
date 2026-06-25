@@ -72,7 +72,7 @@ const login = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Login successful',
-            token: token
+            role: user.role
         });
 
     }catch(error){
@@ -109,7 +109,7 @@ const getUserDetails = async (req, res) => {
                 message: "Unauthorized access. User ID not found."
             })
         }
-        const result = await sql`SELECT id, full_name, email FROM users WHERE id = ${userId}`;
+        const result = await sql`SELECT id, full_name, email, role FROM users WHERE id = ${userId}`;
         const user = result[0];
 
         if(!user){
