@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import logger from "../../utils/logger.js";
 
 const authMiddleware = (req, res, next) => {
     try{
@@ -16,6 +17,10 @@ const authMiddleware = (req, res, next) => {
         next();
     }
     catch (error) {
+        logger.error("Token Verification Failed", {
+            error: error.message,
+            stack: error.stack
+        });
         return res.status(401).json({
             success: false,
             message: "Invalid token."
