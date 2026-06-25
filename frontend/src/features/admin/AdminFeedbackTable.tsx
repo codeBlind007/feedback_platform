@@ -20,7 +20,9 @@ import { Label } from "@/components/Label";
 import { CATEGORY_LABELS } from "@/constants";
 import { Feedback, FeedbackCategory } from "@/types";
 import { MessageSquarePlus } from "lucide-react";
+
 import axios from "axios";
+import { useAuth } from "@/providers/AuthProvider";
 
 interface AdminFeedbackTableProps {
   search: string;
@@ -29,7 +31,8 @@ interface AdminFeedbackTableProps {
 }
 
 export function AdminFeedbackTable({ search, category, status }: AdminFeedbackTableProps) {
-  const { data: feedbacks, isLoading, isError } = useFeedbacks(true, {
+  const {user} = useAuth(); // Assuming you have a useAuth hook to get the current user
+  const { data: feedbacks, isLoading, isError } = useFeedbacks(user?.id, true, {
     search: search || undefined,
     category: category || undefined,
     status: status || undefined,

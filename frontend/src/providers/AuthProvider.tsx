@@ -4,6 +4,8 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { User, LoginPayload, LoginResponse, SignupPayload, SignupResponse } from "../types";
 import { authService } from "../services/auth.service";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 interface AuthContextType {
   user: User | null;
@@ -22,7 +24,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-
+  const queryClient = useQueryClient();
   const fetchUser = async (showLoading = true) => {
     try {
       if (showLoading) {
@@ -97,9 +99,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const logout = async () => {
+    
     setLoading(true);
     try {
       await authService.logout();
+      queryClient.clear();
       setUser(null);
       router.push("/login");
     } catch (error) {

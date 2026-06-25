@@ -13,9 +13,11 @@ import {
 import { StatusBadge } from "@/components/Badge";
 import { CATEGORY_LABELS } from "@/constants";
 import { FeedbackCategory } from "@/types";
+import { useAuth } from "@/providers/AuthProvider";
 
 export function UserFeedbackTable() {
-  const { data: feedbacks, isLoading, isError } = useFeedbacks(false);
+  const {user} = useAuth(); // Assuming you have a useAuth hook to get the current user
+  const { data: feedbacks, isLoading, isError } = useFeedbacks(user?.id, false);
 
   if (isLoading) {
     return (
