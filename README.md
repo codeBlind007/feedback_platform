@@ -3,7 +3,17 @@
 A full-stack customer feedback management platform that allows users to submit feedback and enables administrators to manage, analyze, and respond to feedback through a dedicated dashboard.
 
 ---
+## Demo Credentials
 
+* For Admin (There is only one admin because "user" role assigned to new account by default. Use this admin credentials for demo) - 
+    email : admin@gmail.com
+    password : 123456
+
+* For User - 
+    email : test1@gmail.com
+    password : 123456
+
+---
 ## Features
 
 ### User Features
