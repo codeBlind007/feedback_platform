@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 
 export const validateSignupData = (data) => {
     const errors = {}; 
-    const {fullName, email, password} = data;
+    let {fullName, email, password} = data;
 
     if (!fullName || !validator.isLength(fullName, { min: 2 })) {
         errors.fullName = 'Full name must be at least 2 characters long.';
@@ -26,7 +26,7 @@ export const validateSignupData = (data) => {
 
 export const validateLoginData = (data) => {
     const errors = {};
-    const { email, password } = data;  
+    let { email, password } = data;  
 
     if (!email || !validator.isEmail(email)) {
         errors.email = 'Please provide a valid email address.';
