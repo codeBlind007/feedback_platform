@@ -1,6 +1,7 @@
 import { validateCreateFeedbackData } from "./feedback.validation.js";
 import feedbackService from "./feedback.service.js";
 import logger from "../../utils/logger.js";
+import AppError from "../../utils/AppError.js";
 
 const createFeedback = async (req, res) => {
   try {
@@ -10,7 +11,7 @@ const createFeedback = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Invalid feedback data.",
-        errors,
+        errors: errors
       });
     }
     const { category, comments } = req.body;
@@ -33,14 +34,10 @@ const createFeedback = async (req, res) => {
       message: "Feedback created successfully",
     });
   } catch (error) {
-    logger.error("Error creating feedback", {
-      error: error.message,
-      stack: error.stack,
-    });
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while creating the feedback.",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred while creating feedback", 500);
   }
 };
 
@@ -50,10 +47,7 @@ const getUserFeedback = async (req, res) => {
     const result = await feedbackService.userFeedback(userId);
 
     if (!result || result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "No feedbacks found for the user.",
-      });
+      throw new AppError("No feedback found for the user", 404);
     }
 
     res.status(200).json({
@@ -61,15 +55,12 @@ const getUserFeedback = async (req, res) => {
       message: "User feedback retrieved successfully",
       data: result,
     });
+
   } catch (error) {
-    logger.error("Error fetching user feedback", {
-      error: error.message,
-      stack: error.stack,
-    });
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while fetching the feedback.",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred while fetching user feedback", 500);
   }
 };
 
@@ -80,33 +71,21 @@ const respondToFeedback = async (req, res) => {
     const { response } = req.body;
 
     if (role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. Only admins can respond to feedback.",
-      });
+      throw new AppError("Access denied. Only admins can respond to feedback.", 403);
     }
 
     if (!feedbackId) {
-      return res.status(400).json({
-        success: false,
-        message: "Feedback ID is required.",
-      });
+      throw new AppError("Feedback ID is required", 400);
     }
 
     if (!response) {
-      return res.status(400).json({
-        success: false,
-        message: "Response is required.",
-      });
+      throw new AppError("Response is required", 400);
     }
 
     const result = await feedbackService.feedbackResponse(feedbackId, response);
 
     if (!result || result.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Feedback not found.",
-      });
+      throw new AppError("Feedback not found.", 404);
     }
 
     logger.info("Feedback Responded", {
@@ -119,14 +98,10 @@ const respondToFeedback = async (req, res) => {
       message: "Feedback response updated successfully",
     });
   } catch (error) {
-    logger.error("Error updating feedback response", {
-      error: error.message,
-      stack: error.stack,
-    });
-    res.status(500).json({
-      success: false,
-      message: "An error occurred while updating the feedback response.",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred while responding to feedback", 500);
   }
 };
 
@@ -135,10 +110,7 @@ export const getAnalytics = async (req, res) => {
     const { userId, role } = req.user;
 
     if (role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. Only admins can access analytics.",
-      });
+      throw new AppError("Access denied. Only admins can access analytics.", 403);
     }
 
     const analytics = await feedbackService.getAnalyticsService();
@@ -148,15 +120,10 @@ export const getAnalytics = async (req, res) => {
       data: analytics,
     });
   } catch (error) {
-    logger.error("Analytics Error", {
-      error: error.message,
-      stack: error.stack,
-    });
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch analytics",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred while fetching analytics", 500);
   }
 };
 
@@ -165,10 +132,7 @@ export const getFeedbacksByAdmin = async (req, res) => {
     const { userId, role } = req.user;
 
     if (role !== "admin") {
-      return res.status(403).json({
-        success: false,
-        message: "Access denied. Only admins can fetch all feedback.",
-      });
+      throw new AppError("Access denied. Only admins can access feedbacks.", 403);
     }
 
     const { category, status, search } = req.query;
@@ -185,15 +149,10 @@ export const getFeedbacksByAdmin = async (req, res) => {
       data: feedbacks,
     });
   } catch (error) {
-    logger.error("Fetch Feedback Error", {
-      error: error.message,
-      stack: error.stack,
-    });
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch feedback",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred while fetching feedbacks", 500);
   }
 };
 

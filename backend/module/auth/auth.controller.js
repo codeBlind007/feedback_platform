@@ -3,14 +3,20 @@ import { validateSignupData, validateLoginData } from "./auth.validation.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import logger from "../../utils/logger.js"
+import AppError from "../../utils/AppError.js";
 
 const signup = async (req, res) => {
   try {
     const { errors, isValid } = validateSignupData(req.body);
 
     if (!isValid) {
-      return res.status(400).json({ errors });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid signup data.",
+        errors: errors
+      });
     }
+
     const role = "user"; // Default role for new users
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
 
@@ -29,14 +35,10 @@ const signup = async (req, res) => {
       message: "User registered successfully",
     });
   } catch (error) {
-    logger.error("Signup Failed", {
-      error: error.message,
-      stack: error.stack,
-    });
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred during signup",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred during signup", 500);
   }
 };
 
@@ -45,27 +47,25 @@ const login = async (req, res) => {
     const { errors, isValid } = validateLoginData(req.body);
 
     if (!isValid) {
-      return res.status(400).json({ errors });
+      return res.status(400).json({
+        success: false,
+        message: "Invalid login data.",
+        errors: errors
+      });
     }
     const { email, password } = req.body;
     const result = await sql`SELECT * FROM users WHERE email = ${email}`;
     const user = result[0];
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "Invalid Email or Password",
-      });
+      throw new AppError("Invalid Email or Password", 404);
     }
 
     const userPassword = user.password;
     const isCorrect = await bcrypt.compare(password, userPassword);
 
     if (!isCorrect) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid Email or Password",
-      });
+      throw new AppError("Invalid Email or Password", 400);
     }
 
     const token = jwt.sign(
@@ -73,7 +73,8 @@ const login = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: "1h" },
     );
-    console.log("from login", logger)
+    
+
     logger.info("User Login Success", {
       userId: user.id,
       email: user.email,
@@ -93,14 +94,10 @@ const login = async (req, res) => {
       role: user.role,
     });
   } catch (error) {
-    logger.error("Login Failed", {
-      error: error.message,
-      stack: error.stack,
-    });
-    return res.status(500).json({
-      success: false,
-      message: "An error occurred during login",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred during login", 500);
   }
 };
 
@@ -112,15 +109,10 @@ const logout = async (req, res) => {
       message: "Logged out successfully",
     });
   } catch (error) {
-    logger.error("Logout Failed", {
-      error: error.message,
-      stack: error.stack,
-    });
-
-    return res.status(500).json({
-      success: false,
-      message: "Failed to logout",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred during logout", 500);
   }
 };
 
@@ -128,20 +120,14 @@ const getUserDetails = async (req, res) => {
   try {
     const { userId, role } = req.user;
     if (!userId) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized access. User ID not found.",
-      });
+      throw new AppError("User ID required", 400);
     }
     const result =
       await sql`SELECT id, full_name, email, role FROM users WHERE id = ${userId}`;
     const user = result[0];
 
     if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
+      throw new AppError("User not found", 404);
     }
 
     res.status(200).json({
@@ -149,14 +135,10 @@ const getUserDetails = async (req, res) => {
       data: user,
     });
   } catch (error) {
-    logger.error("Fetch User Details Failed", {
-      error: error.message,
-      stack: error.stack,
-    });
-    return res.status(500).json({
-      success: false,
-      message: "Failed to fetch user details",
-    });
+    if (error instanceof AppError) {
+      throw error;
+    }
+    throw new AppError("An error occurred while fetching user details", 500);
   }
 };
 

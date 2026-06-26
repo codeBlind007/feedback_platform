@@ -186,8 +186,6 @@ Given one additional week, I would implement:
 
 ### DevOps
 
-- CI/CD pipeline
-- Automated deployment
 - Infrastructure monitoring
 
 ---
@@ -407,9 +405,6 @@ OpenTelemetry tracing and metrics.
 
 Protection against abuse of public endpoints.
 
-### CI/CD
-
-Automated build, test, and deployment pipeline.
 
 ---
 
@@ -418,7 +413,7 @@ Automated build, test, and deployment pipeline.
 ## Implemented
 
 - Authentication
-- Structured Logging
+- CI/CD
 
 ## Planned
 
@@ -426,7 +421,6 @@ Automated build, test, and deployment pipeline.
 - Monitoring
 - Observability
 - Rate Limiting
-- CI/CD
 
 ---
 
@@ -443,5 +437,6 @@ Given the available time, I prioritized:
 - Validation
 - Logging
 - Production-oriented design
+- CI/CD
 
 while intentionally deferring more advanced operational features such as monitoring, observability, testing, and large-scale collaboration workflows.

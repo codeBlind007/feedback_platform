@@ -62,6 +62,7 @@ A full-stack customer feedback management platform that allows users to submit f
 * Neon Database
 * JWT Authentication
 * Winston Logging
+* CI/CD
 
 ---
 
@@ -279,6 +280,7 @@ Implemented:
 * Role-Based Authorization
 * Structured Logging
 * Health Check Endpoint
+* CI/CD Pipeline
 
 Planned:
 
@@ -286,7 +288,6 @@ Planned:
 * Monitoring
 * Observability
 * Rate Limiting
-* CI/CD Pipeline
 
 ---
 
@@ -300,7 +301,6 @@ Planned:
 * Monitoring & Observability
 * Automated Testing
 * Rate Limiting
-* CI/CD
 * Advanced Analytics
 
 ---

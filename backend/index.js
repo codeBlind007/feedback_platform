@@ -6,6 +6,7 @@ import sql from "./utils/db.js";
 import authRoutes from "./module/auth/auth.routes.js";
 import feedbackRoutes from "./module/feedback/feedback.routes.js";
 import requestLogger from "./utils/requestLogger.js"
+import globalErrorHandler from "./middlewares/error.middleware.js"
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -21,6 +22,8 @@ app.get("/", (req, res) => {
         message: "server is running",
     })
 })
+
+app.use(globalErrorHandler);
 
 app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}`);
